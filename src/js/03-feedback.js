@@ -1,34 +1,40 @@
-import throttle from 'lodash.throttle';
+import throttle from "lodash.throttle";
 
-const refs = {
-    form: document.querySelector('.feedback-form'),
-    fields : {
-    message : document.querySelector('textarea'),
-    email: document.querySelector('input'),
-       },
+const form = document.querySelector('.feedback-form');
+
+const allData = {};
+
+const STORAGE_KEY = "feedback-form-state";
+
+function onFormInput(event) {
+    allData.email = form.elements.email.value;
+    allData.message = form.elements.message.value;
+
+    const dataOnStorage = localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
 };
- 
-refs.fields.message.addEventListener('input', onTextareaInput);
-refs.form.addEventListener('submit', onFormSubmit);
 
-const onFormSubmit = event => {
-    event.preventDefault();
+function onSubmitForm(event) {
+   event.preventDefault();
+
+   if(form.elements.message.value === '' || form.elements.email.value === '') {
+      alert("Всі поля мають бути заповнені!");
+   } else{
     event.currentTarget.reset();
-
-    console.log(event.currentTarget);
+    localStorage.removeItem(STORAGE_KEY);
+    console.log(allData); 
+    };
 };
 
-const onTextareaInput = event => {
-    const message = event.currentTarget.value;
+function noDataSaved() {
+   const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
-    localStorage.setItem("feedback-form-state", message);
+   if(savedData) {
+    Object.entries(savedData).forEach(([name, value]) => {
+        form.elements[name].value = value;
+   })
+  }
 };
 
-function populateMessage() {
-    const getMessage = localStorage.getItem("feedback-form-state");
-
-    if (getMessage) {
-
-    }
-}
-
+noDataSaved();
+form.addEventListener('input', throttle(onFormInput, 500));
+form.addEventListener('submit',onSubmitForm);

@@ -12,9 +12,10 @@ function playVideo ({seconds})  {
     localStorage.setItem(CURRENT_TIME, seconds);
 };
 
-function auditLocalStorage() {
+setCurrentTime();
+function setCurrentTime() {
   if(!localStorage.getItem(CURRENT_TIME)) {
     return;
     };
     player.setCurrentTime(localStorage.getItem(CURRENT_TIME));
-}
+};
